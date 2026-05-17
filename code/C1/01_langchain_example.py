@@ -21,14 +21,14 @@ docs = loader.load()
 text_splitter = RecursiveCharacterTextSplitter()
 chunks = text_splitter.split_documents(docs)
 
-# 中文嵌入模型
+# 使用HuggingFaceEmbeddings加载之前在初始化设置中下载的中文嵌入模型
 embeddings = HuggingFaceEmbeddings(
     model_name="BAAI/bge-small-zh-v1.5",
     model_kwargs={'device': 'cpu'},
     encode_kwargs={'normalize_embeddings': True}
 )
   
-# 构建向量存储
+# 构建向量存储，从而一个可供查询的知识索引
 vectorstore = InMemoryVectorStore(embeddings)
 vectorstore.add_documents(chunks)
 
@@ -52,7 +52,7 @@ llm = ChatOpenAI(
     model="glm-4.7-flash-free",
     temperature=0.7,
     max_tokens=4096,
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    api_key=os.getenv("AIHUBMIX_API_KEY"),
     base_url="https://aihubmix.com/v1"
 )
 
@@ -68,8 +68,12 @@ llm = ChatOpenAI(
 question = "文中举了哪些例子？"
 
 # 在向量存储中查询相关文档
+# 根据用户问题在索引中查找最相关的 k (此处示例中 k=3) 个文本块
 retrieved_docs = vectorstore.similarity_search(question, k=3)
+# 准备上下文: 将检索到的多个文本块的页面内容 (doc.page_content) 合并成一个单一的字符串
+# 并使用双换行符 ("\n\n") 分隔各个块，形成最终的上下文信息 (docs_content) 供大语言模型参考
 docs_content = "\n\n".join(doc.page_content for doc in retrieved_docs)
 
+# 将检索到的上下文与用户问题结合，利用大语言模型（LLM）生成答案
 answer = llm.invoke(prompt.format(question=question, context=docs_content))
 print(answer)

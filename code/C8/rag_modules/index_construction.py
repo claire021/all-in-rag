@@ -6,7 +6,7 @@ import logging
 from typing import List
 from pathlib import Path
 
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 
@@ -35,8 +35,8 @@ class IndexConstructionModule:
         
         self.embeddings = HuggingFaceEmbeddings(
             model_name=self.model_name,
-            model_kwargs={'device': 'cpu'},
-            encode_kwargs={'normalize_embeddings': True}
+            model_kwargs={'device': 'cpu'}, # 在 CPU 上运行
+            encode_kwargs={'normalize_embeddings': True} # 向量归一化（用于余弦相似度）
         )
         
         logger.info("嵌入模型初始化完成")
@@ -110,7 +110,7 @@ class IndexConstructionModule:
             self.vectorstore = FAISS.load_local(
                 self.index_save_path,
                 self.embeddings,
-                allow_dangerous_deserialization=True
+                allow_dangerous_deserialization=True # FAISS 要求显式确认允许反序列化
             )
             logger.info(f"向量索引已从 {self.index_save_path} 加载")
             return self.vectorstore

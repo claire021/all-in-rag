@@ -105,7 +105,7 @@ class KimiRecipeAgent:
         for attempt in range(max_retries):
             try:
                 response = self.client.chat.completions.create(
-                    model="kimi-k2-0711-preview",
+                    model="moonshot-v1-8k",
                     messages=messages,
                     temperature=0.3,
                     max_tokens=2048,

@@ -12,7 +12,7 @@ docs = [Document(page_content=t) for t in texts]
 embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-zh-v1.5")
 
 # 2. 创建向量存储并保存到本地
-vectorstore = FAISS.from_documents(docs, embeddings)
+vectorstore = FAISS.from_documents(docs, embeddings) # 封装层
 
 local_faiss_path = "./faiss_index_store"
 vectorstore.save_local(local_faiss_path)

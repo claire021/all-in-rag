@@ -64,18 +64,19 @@ class DataPreparationModule:
 
                 # 为每个父文档分配确定性的唯一ID（基于数据根目录的相对路径）
                 try:
-                    data_root = Path(self.data_path).resolve()
+                    data_root = Path(self.data_path).resolve() # 获取数据根目录的绝对路径
                     relative_path = Path(md_file).resolve().relative_to(data_root).as_posix()
                 except Exception:
                     relative_path = Path(md_file).as_posix()
+                # Python内置的哈希算法库生成MD5哈希值作为父文档ID，确保同一文件始终得到相同的ID
                 parent_id = hashlib.md5(relative_path.encode("utf-8")).hexdigest()
 
                 # 创建Document对象
                 doc = Document(
                     page_content=content,
                     metadata={
-                        "source": str(md_file),
-                        "parent_id": parent_id,
+                        "source": str(md_file), # 原始文件路径
+                        "parent_id": parent_id, # 父文档ID
                         "doc_type": "parent"  # 标记为父文档
                     }
                 )

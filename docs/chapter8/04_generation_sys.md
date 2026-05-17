@@ -113,7 +113,7 @@ flowchart LR
 class GenerationIntegrationModule:
     """生成集成模块 - 负责LLM集成和回答生成"""
     
-    def __init__(self, model_name: str = "kimi-k2-0711-preview", 
+    def __init__(self, model_name: str = "moonshot-v1-8k", 
                  temperature: float = 0.1, max_tokens: int = 2048):
         self.model_name = model_name
         self.temperature = temperature
